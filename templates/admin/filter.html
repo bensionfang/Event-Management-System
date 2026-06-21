@@ -1,0 +1,17 @@
+{% load i18n %}
+<div class="custom-filter-section" style="margin-bottom: 20px;">
+    {% if title != '資源回收桶' %}
+    <h3 style="font-size: 0.95rem; font-weight: bold; margin-bottom: 10px; color: var(--body-fg);">
+        📍 依「{{ title }}」分類
+    </h3>
+    {% endif %}
+    <ul style="list-style: none; padding: 0; margin: 0;">
+    {% for choice in choices %}
+        <li{% if choice.selected %} class="selected" style="background-color: #f2f2f2; border-left: 3px solid var(--primary);"{% endif %} style="margin-bottom: 5px;">
+            <a href="{{ choice.query_string|iriencode }}" title="{{ choice.display }}" style="display: block; padding: 8px 12px; color: var(--body-fg); text-decoration: none; font-size: 0.9rem;">
+                {{ choice.display }}
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
+</div>

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ event.title }} | 系辦活動系統{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+    <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">{{ event.title }}</h2>
+    <p style="color: var(--text-light); margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        活動時間: {{ event.date|date:"Y/m/d H:i" }}<br>
+        報名人數: {{ event.registered_count }} / {{ event.capacity }}
+    </p>
+
+    <div style="margin-bottom: 3rem; white-space: pre-wrap;">{{ event.description }}</div>
+
+    <div style="text-align: center; margin-bottom: 3rem;">
+        {% if is_registered %}
+            <button class="btn btn-outline" disabled style="cursor: not-allowed; opacity: 0.7;">您已報名此活動</button>
+        {% elif is_full %}
+            <button class="btn btn-outline" disabled style="cursor: not-allowed; opacity: 0.7;">名額已滿</button>
+        {% else %}
+            <form action="{% url 'events:register' event.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn" style="padding: 1rem 3rem; font-size: 1.1rem;">立即報名</button>
+            </form>
+        {% endif %}
+    </div>
+
+    <div style="background-color: var(--bg-color); padding: 1.5rem; border-radius: 8px;">
+        <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">已報名名單</h3>
+        {% if attendees %}
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+                {% for name in attendees %}
+                    <span style="background-color: var(--surface-color); padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.9rem; border: 1px solid var(--border-color);">
+                        {{ name }}
+                    </span>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: var(--text-light); font-size: 0.9rem;">目前尚無人報名</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

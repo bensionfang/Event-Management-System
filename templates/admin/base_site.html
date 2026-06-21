@@ -1,0 +1,140 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ title }} | 系辦專用管理系統{% endblock %}
+
+{% block branding %}
+<h1 id="site-name" style="font-weight: 600; letter-spacing: 1px;"><a href="{% url 'admin:index' %}">系辦專用管理後台</a></h1>
+{% endblock %}
+
+{% block extrastyle %}
+<style>
+    :root {
+        --primary: #666666;
+        --secondary: #888888;
+        --accent: #666666;
+        --primary-fg: #ffffff;
+        --body-fg: #444444;
+        --body-bg: #f9f9f9;
+        --body-quiet-color: #777777;
+        --body-loud-color: #444444;
+        --header-color: #fff;
+        --header-branding-color: #fff;
+        --header-bg: #666666;
+        --header-link-color: #fff;
+        --breadcrumbs-fg: #888888;
+        --breadcrumbs-link-fg: #444444;
+        --breadcrumbs-bg: #ffffff;
+        --link-fg: #666666;
+        --link-hover-color: #888888;
+        --link-selected-fg: #ffffff;
+        --hairline-color: #eaeaea;
+        --border-color: #eaeaea;
+        --error-fg: #d9534f;
+        --message-success-bg: #5cb85c;
+        --button-bg: #666666;
+        --button-hover-bg: #888888;
+        --default-button-bg: #666666;
+        --default-button-hover-bg: #888888;
+        --selected-bg: #f2f2f2;
+        --selected-row: #fafafa;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    #header {
+        padding: 15px 40px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    div.breadcrumbs {
+        padding: 15px 40px;
+        font-size: 14px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .module h2, .module caption, .inline-group h2 {
+        background: var(--body-bg);
+        color: var(--primary);
+        border-bottom: 2px solid var(--primary);
+        font-weight: 600;
+    }
+    
+    input[type=submit], input[type=button], .button, .submit-row input, a.button {
+        border-radius: 4px;
+        padding: 10px 20px;
+        font-weight: normal;
+        text-transform: none;
+        box-shadow: none;
+    }
+    
+    .help, p.help {
+        font-size: 13px !important;
+        color: #777 !important;
+        background-color: #f2f2f2;
+        padding: 8px 12px;
+        border-radius: 4px;
+        margin-top: 5px;
+        display: inline-block;
+    }
+    
+    /* 強制將表格標題列、過濾器等全部轉換為灰色 */
+    table thead th, 
+    .change-list .filtered .results table thead th,
+    #changelist table thead th {
+        background-color: var(--primary) !important;
+        color: #ffffff !important;
+        border-color: var(--border-color) !important;
+    }
+    table thead th a:link, table thead th a:visited {
+        color: #ffffff !important;
+    }
+    #changelist-filter h2 {
+        background: var(--primary) !important;
+    }
+    #toolbar {
+        background: var(--body-bg) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+    .paginator {
+        border-top: 1px solid var(--border-color) !important;
+    }
+    table tbody tr td {
+        color: var(--body-fg) !important;
+    }
+    
+    /* 縮減右側篩選條件的寬度 */
+    #changelist-filter {
+        flex: 0 0 200px !important;
+        width: 200px !important;
+        margin-left: 15px;
+    }
+    
+    /* 放大並突顯「新增」按鈕 */
+    .object-tools {
+        float: none !important;
+        display: flex !important;
+        justify-content: flex-end;
+        margin-bottom: 20px !important;
+        margin-top: 10px !important;
+    }
+    .object-tools a.addlink {
+        background-color: var(--primary) !important;
+        color: #ffffff !important;
+        font-size: 1.1rem !important;
+        padding: 12px 30px !important;
+        border-radius: 8px !important;
+        font-weight: bold !important;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease !important;
+        display: inline-flex;
+        align-items: center;
+    }
+    .object-tools a.addlink:hover {
+        background-color: var(--secondary) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+</style>
+{% endblock %}

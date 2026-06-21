@@ -1,0 +1,9 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+
+{% block submit_buttons_bottom %}
+    <div class="submit-row">
+        {{ block.super }}
+        <a href="{% url opts|admin_urlname:'changelist' %}" class="button" style="background-color: #888; color: white; padding: 10px 15px; border-radius: 4px; text-decoration: none; margin-left: 10px; float: right; font-weight: normal; font-size: 0.8125rem;">取消 (Cancel)</a>
+    </div>
+{% endblock %}

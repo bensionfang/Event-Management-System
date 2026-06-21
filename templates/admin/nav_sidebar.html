@@ -1,0 +1,111 @@
+{% load i18n %}
+
+<nav id="nav-sidebar" aria-label="{% translate 'Sidebar' %}">
+    <div class="custom-sidebar-wrapper">
+        <div class="sidebar-header">
+            系辦導覽列
+        </div>
+        
+        <ul class="custom-nav-list">
+            <li>
+                <a href="{% url 'admin:index' %}" class="sidebar-link">
+                    <span class="icon">🏠</span>
+                    <span class="text">回到儀表板首頁</span>
+                </a>
+            </li>
+            <li class="nav-divider"></li>
+            <li>
+                <a href="{% url 'admin:events_event_changelist' %}" class="sidebar-link">
+                    <span class="icon">📅</span>
+                    <span class="text">1. 活動報名管理</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'admin:events_registration_changelist' %}" class="sidebar-link">
+                    <span class="icon">✔️</span>
+                    <span class="text">2. 現場報到點名</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'admin:records_record_changelist' %}" class="sidebar-link">
+                    <span class="icon">📸</span>
+                    <span class="text">3. 歷年紀錄牆</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'admin:events_deletedevent_changelist' %}" class="sidebar-link">
+                    <span class="icon">🗑️</span>
+                    <span class="text">4. 資源回收桶</span>
+                </a>
+            </li>
+            <li class="nav-divider"></li>
+            <li>
+                <a href="{% url 'admin:accounts_customuser_changelist' %}" class="sidebar-link">
+                    <span class="icon">👥</span>
+                    <span class="text">人員與權限管理</span>
+                </a>
+            </li>
+            <li>
+                <a href="/" target="_blank" class="sidebar-link">
+                    <span class="icon">🌐</span>
+                    <span class="text">開啟前台網站</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<style>
+    /* 覆寫預設的側邊欄樣式 */
+    #nav-sidebar {
+        background-color: var(--body-bg) !important;
+        border-right: 1px solid var(--border-color) !important;
+        width: 250px !important;
+    }
+    
+    .custom-sidebar-wrapper {
+        padding: 20px 0;
+    }
+    
+    .sidebar-header {
+        padding: 0 20px 15px 20px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: var(--body-quiet-color);
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+    
+    .custom-nav-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .nav-divider {
+        height: 1px;
+        background-color: var(--border-color);
+        margin: 15px 20px;
+    }
+    
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        color: var(--body-fg) !important;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        font-size: 0.95rem;
+    }
+    
+    .sidebar-link:hover {
+        background-color: var(--selected-bg) !important;
+        color: var(--primary) !important;
+    }
+    
+    .sidebar-link .icon {
+        margin-right: 12px;
+        font-size: 1.1rem;
+        opacity: 0.8;
+    }
+</style>
