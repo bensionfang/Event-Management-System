@@ -5,39 +5,48 @@
 {% block content %}
 <div class="card" style="max-width: 800px; margin: 0 auto;">
     <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">{{ event.title }}</h2>
-    <p style="color: var(--text-light); margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
-        活動時間: {{ event.date|date:"Y/m/d H:i" }}<br>
-        報名人數: {{ event.registered_count }} / {{ event.capacity }}
-    </p>
+    <div style="color: var(--text-light); margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; line-height: 1.8;">
+        <div><strong>活動時間：</strong> {{ event.date|date:"Y/m/d H:i" }}{% if event.end_time %} ~ {{ event.end_time|date:"Y/m/d H:i" }}{% endif %}</div>
+        {% if event.location %}<div><strong>地點：</strong> {{ event.location }}</div>{% endif %}
+        {% if event.organizer %}<div><strong>主辦單位：</strong> {{ event.organizer }}</div>{% endif %}
+        {% if event.target_audience %}<div><strong>參加對象：</strong> {{ event.target_audience }}</div>{% endif %}
+        {% if event.registration_start_time or event.registration_end_time %}
+        <div><strong>報名時間：</strong> 
+            {% if event.registration_start_time %}{{ event.registration_start_time|date:"Y/m/d H:i" }}{% else %}即日起{% endif %}
+            ~ 
+            {% if event.registration_end_time %}{{ event.registration_end_time|date:"Y/m/d H:i" }}{% else %}額滿為止{% endif %}
+        </div>
+        {% endif %}
+        <div><strong>報名人數上限：</strong> {{ event.capacity }}</div>
+        <div><strong>已報名人數：</strong> {{ event.registered_count }}</div>
+    </div>
 
     <div style="margin-bottom: 3rem; white-space: pre-wrap;">{{ event.description }}</div>
 
-    <div style="text-align: center; margin-bottom: 3rem;">
-        {% if is_registered %}
-            <button class="btn btn-outline" disabled style="cursor: not-allowed; opacity: 0.7;">您已報名此活動</button>
-        {% elif is_full %}
-            <button class="btn btn-outline" disabled style="cursor: not-allowed; opacity: 0.7;">名額已滿</button>
+    <div style="margin-bottom: 3rem;">
+        {% if is_full %}
+            <div style="text-align: center;">
+                <button class="btn btn-outline" disabled style="cursor: not-allowed; opacity: 0.7; padding: 1rem 3rem; font-size: 1.1rem;">名額已滿</button>
+            </div>
         {% else %}
-            <form action="{% url 'events:register' event.id %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn" style="padding: 1rem 3rem; font-size: 1.1rem;">立即報名</button>
-            </form>
+            <div style="background-color: var(--bg-body); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--border-color); max-width: 400px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <h3 style="margin-top: 0; text-align: center; font-size: 1.25rem;">填寫報名資料</h3>
+                <form action="{% url 'events:register' event.id %}" method="post" style="display: flex; flex-direction: column; gap: 1rem;">
+                    {% csrf_token %}
+                    <div>
+                        <label for="name" style="display: block; margin-bottom: 0.5rem; color: var(--text-color);">姓名</label>
+                        <input type="text" id="name" name="name" required placeholder="請輸入姓名" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius); background-color: var(--bg-card); color: var(--text-color); box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label for="email" style="display: block; margin-bottom: 0.5rem; color: var(--text-color);">聯絡信箱</label>
+                        <input type="email" id="email" name="email" required placeholder="請輸入 Email" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius); background-color: var(--bg-card); color: var(--text-color); box-sizing: border-box;">
+                    </div>
+                    <button type="submit" class="btn" style="padding: 1rem; font-size: 1.1rem; width: 100%; margin-top: 1rem; cursor: pointer;">送出報名</button>
+                </form>
+            </div>
         {% endif %}
     </div>
 
-    <div style="background-color: var(--bg-color); padding: 1.5rem; border-radius: 8px;">
-        <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">已報名名單</h3>
-        {% if attendees %}
-            <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
-                {% for name in attendees %}
-                    <span style="background-color: var(--surface-color); padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.9rem; border: 1px solid var(--border-color);">
-                        {{ name }}
-                    </span>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p style="color: var(--text-light); font-size: 0.9rem;">目前尚無人報名</p>
-        {% endif %}
-    </div>
+
 </div>
 {% endblock %}

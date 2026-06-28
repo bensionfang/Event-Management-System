@@ -1,0 +1,43 @@
+{% load i18n %}
+<div class="actions">
+  {% block actions %}
+    {% block actions-form %}
+    {% for field in action_form %}{% if field.label %}<label>{{ field.label }} {{ field }}</label>{% else %}{{ field }}{% endif %}{% endfor %}
+    {% endblock %}
+    {% block actions-submit %}
+    <button type="submit" class="button" name="index" value="{{ action_index|default:0 }}">{% translate "Run" %}</button>
+    {% endblock %}
+    {% block actions-counter %}
+    {% if actions_selection_counter %}
+        <span class="action-counter" data-actions-icnt="{{ cl.result_list|length }}">{{ selection_note }}</span>
+        {% if cl.result_count != cl.result_list|length %}
+        <span class="all hidden">{{ selection_note_all }}</span>
+        <span class="question hidden">
+            <a role="button" href="#" title="{% translate 'Click here to select the objects across all pages' %}">{% blocktranslate with cl.result_count as total_count %}Select all {{ total_count }} {{ module_name }}{% endblocktranslate %}</a>
+        </span>
+        <span class="clear hidden"><a role="button" href="#">{% translate "Clear selection" %}</a></span>
+        {% endif %}
+    {% endif %}
+    {% endblock %}
+    
+    <!-- 自訂的移除排序按鈕 -->
+    <span id="global-clear-sort" style="display: none; margin-left: 15px;">
+        <a role="button" href="javascript:void(0)" onclick="clearGlobalSorting()" style="color: #e74c3c; font-weight: bold; text-decoration: none; padding: 4px 10px; background: rgba(231,76,60,0.1); border-radius: 4px; transition: 0.2s;">
+            ✖ 移除所有排序
+        </a>
+    </span>
+    <script>
+        function clearGlobalSorting() {
+            let url = new URL(window.location.href);
+            url.searchParams.delete('o');
+            window.location.href = url.toString();
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            let url = new URL(window.location.href);
+            if (url.searchParams.has('o')) {
+                document.getElementById('global-clear-sort').style.display = 'inline-block';
+            }
+        });
+    </script>
+  {% endblock %}
+</div>

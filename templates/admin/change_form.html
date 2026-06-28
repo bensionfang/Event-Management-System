@@ -1,9 +1,52 @@
 {% extends "admin/change_form.html" %}
 {% load i18n admin_urls %}
 
+{% block breadcrumbs %}{% endblock %}
+
 {% block submit_buttons_bottom %}
-    <div class="submit-row">
-        {{ block.super }}
-        <a href="{% url opts|admin_urlname:'changelist' %}" class="button" style="background-color: #888; color: white; padding: 10px 15px; border-radius: 4px; text-decoration: none; margin-left: 10px; float: right; font-weight: normal; font-size: 0.8125rem;">取消 (Cancel)</a>
-    </div>
+    {{ block.super }}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var submitRows = document.querySelectorAll('.submit-row');
+            if (submitRows.length > 0) {
+                var submitRow = submitRows[submitRows.length - 1]; 
+                submitRow.style.display = 'flex';
+                submitRow.style.alignItems = 'center';
+                submitRow.style.justifyContent = 'flex-start';
+                
+                var saveBtns = submitRow.querySelectorAll('input[type="submit"]');
+                saveBtns.forEach(function(btn) {
+                    btn.style.float = 'none';
+                    btn.style.margin = '0 10px 0 0';
+                    if (btn.classList.contains('default') || btn.name === '_save') {
+                        btn.style.order = '1';
+                        btn.style.padding = '12px 24px';
+                        btn.style.fontSize = '1.05rem';
+                        btn.style.height = 'auto';
+                    } else if (btn.name === '_continue') {
+                        btn.style.order = '2';
+                    } else if (btn.name === '_addanother') {
+                        btn.style.order = '3';
+                    } else {
+                        btn.style.order = '4';
+                    }
+                });
+                
+                var deleteBtn = submitRow.querySelector('.deletelink-box') || submitRow.querySelector('.deletelink');
+                if (deleteBtn) {
+                    deleteBtn.style.order = '5';
+                    deleteBtn.style.float = 'none';
+                    deleteBtn.style.margin = '0';
+                }
+                
+                var cancelBtn = document.createElement('a');
+                cancelBtn.href = "{% url opts|admin_urlname:'changelist' %}";
+                cancelBtn.className = "button";
+                cancelBtn.style.cssText = "order: 6; background-color: #888; color: white; padding: 10px 15px; border-radius: 4px; text-decoration: none; margin-left: auto; line-height: 15px;";
+                cancelBtn.textContent = "取消";
+                
+                submitRow.appendChild(cancelBtn);
+            }
+        });
+    </script>
 {% endblock %}

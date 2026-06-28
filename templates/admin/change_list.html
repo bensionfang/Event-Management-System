@@ -1,24 +1,42 @@
 {% extends "admin/change_list.html" %}
 {% load i18n admin_list %}
 
-{% block filters %}
-  {% if cl.has_filters %}
-    <div id="changelist-filter" style="background-color: var(--body-bg); border-left: 1px solid var(--border-color); border-radius: 0 8px 8px 0; padding: 12px;">
-      <h2 style="font-size: 1rem; font-weight: bold; margin-bottom: 15px; color: #fff; background-color: var(--primary); padding: 8px 10px; border-radius: 4px; text-align: center;">
-        🔍 快速資料篩選
-      </h2>
-      
-      {% if cl.has_active_filters %}
-        <h3 id="changelist-filter-clear" style="margin-bottom: 20px; text-align: center;">
-          <a href="{{ cl.clear_all_filters_qs }}" style="color: #d9534f; text-decoration: none; font-size: 0.9rem; font-weight: bold;">
-            ✖ 清除所有篩選條件
-          </a>
-        </h3>
-      {% endif %}
-      
-      {% for spec in cl.filter_specs %}
-        {% admin_list_filter cl spec %}
-      {% endfor %}
+{% block breadcrumbs %}{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block search %}
+<div id="unified-toolbar" style="background-color: var(--card-bg); border-radius: 8px; padding: 15px 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.04);">
+    <!-- 上半部：搜尋列 -->
+    <div style="width: 100%;">
+        {% search_form cl %}
     </div>
-  {% endif %}
+    
+    <!-- 下半部：篩選列 -->
+    {% if cl.has_filters %}
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 15px; padding-top: 10px;">
+        <span style="font-weight: bold; color: var(--body-quiet-color); margin-right: 5px; font-size: 0.95rem;">
+            進階篩選：
+        </span>
+        
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; flex-grow: 1; align-items: center;">
+            {% for spec in cl.filter_specs %}
+                {% admin_list_filter cl spec %}
+            {% endfor %}
+        </div>
+        
+        {% if cl.has_active_filters %}
+        <div style="margin-left: auto;">
+            <a href="{{ cl.clear_all_filters_qs }}" style="color: var(--error-fg); text-decoration: none; font-size: 0.85rem; padding: 5px 10px; border-radius: 4px; transition: 0.2s;">
+                清除篩選
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block filters %}
+{# 隱藏預設的 filters，因為我們已經把它整併到 search 區塊了 #}
 {% endblock %}

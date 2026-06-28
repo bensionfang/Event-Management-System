@@ -1,0 +1,17 @@
+{% load i18n %}
+<div class="custom-filter-section" style="display: flex; align-items: center; background: rgba(120,120,120,0.08); padding: 5px 12px; border-radius: 8px;">
+    <span style="font-size: 0.9rem; font-weight: bold; color: var(--body-fg); margin-right: 15px; white-space: nowrap;">
+        {{ title }}
+    </span>
+    <div style="display: flex; gap: 15px;">
+        {% for choice in choices %}
+            <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--body-fg);">
+                <input type="radio" name="filter_{{ title|slugify }}" value="{{ choice.query_string|iriencode }}" 
+                       onchange="window.location.href=this.value"
+                       style="margin: 0; cursor: pointer; accent-color: var(--primary);"
+                       {% if choice.selected %}checked{% endif %}>
+                {{ choice.display }}
+            </label>
+        {% endfor %}
+    </div>
+</div>

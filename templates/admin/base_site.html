@@ -3,27 +3,128 @@
 {% block title %}{{ title }} | 系辦專用管理系統{% endblock %}
 
 {% block branding %}
-<h1 id="site-name" style="font-weight: 600; letter-spacing: 1px;"><a href="{% url 'admin:index' %}">系辦專用管理後台</a></h1>
+<div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding-right: 20px;">
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <button onclick="goToParentLayer()" id="adminBackBtn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 14px; display: none; align-items: center; gap: 5px; transition: background 0.2s;">
+            &larr; 上一頁
+        </button>
+        <script>
+            function goToParentLayer() {
+                let segments = window.location.pathname.split('/').filter(Boolean);
+                if (segments.length > 3) {
+                    window.location.href = '/' + segments.slice(0, 3).join('/') + '/';
+                } else if (segments.length === 3) {
+                    window.location.href = '/' + segments.slice(0, 2).join('/') + '/';
+                } else if (segments.length === 2) {
+                    window.location.href = '/admin/';
+                } else {
+                    window.location.href = '/admin/';
+                }
+            }
+        </script>
+        <h1 id="site-name" style="margin: 0; font-weight: 600; letter-spacing: 1px;"><a href="{% url 'admin:index' %}">系辦專用管理後台</a></h1>
+    </div>
+    
+    <div id="custom-theme-container">
+        <button id="custom-simple-toggle" title="切換深淺色" style="background: transparent; border: none; color: white; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s, opacity 0.2s; opacity: 0.8;">
+            <div id="theme-icon"></div>
+        </button>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const btn = document.getElementById('custom-simple-toggle');
+                const iconContainer = document.getElementById('theme-icon');
+                
+                const sunSvg = '<svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+                const moonSvg = '<svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+                
+                // 覆寫系統預設，強制只能是 light 或 dark
+                let theme = localStorage.getItem('theme');
+                if (!theme || theme === 'auto') {
+                    theme = 'light'; // 移除自動模式，預設給淺色
+                    localStorage.setItem('theme', theme);
+                    document.documentElement.setAttribute('data-theme', theme);
+                }
+                
+                const updateBtn = () => {
+                    if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                        iconContainer.innerHTML = moonSvg;
+                    } else {
+                        iconContainer.innerHTML = sunSvg;
+                    }
+                };
+                
+                updateBtn();
+                
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    let curr = document.documentElement.getAttribute('data-theme');
+                    let next = curr === 'dark' ? 'light' : 'dark';
+                    document.documentElement.setAttribute('data-theme', next);
+                    localStorage.setItem('theme', next);
+                    updateBtn();
+                });
+                
+                btn.addEventListener('mouseover', () => { btn.style.opacity = '1'; btn.style.transform = 'scale(1.15)'; });
+                btn.addEventListener('mouseout', () => { btn.style.opacity = '0.8'; btn.style.transform = 'scale(1)'; });
+            });
+        </script>
+    </div>
+</div>
+<script>
+    if (window.location.pathname !== '/admin/') {
+        document.getElementById('adminBackBtn').style.display = 'inline-flex';
+    }
+    document.getElementById('adminBackBtn').addEventListener('mouseover', function() {
+        this.style.background = 'rgba(255,255,255,0.2)';
+    });
+    document.getElementById('adminBackBtn').addEventListener('mouseout', function() {
+        this.style.background = 'rgba(255,255,255,0.1)';
+    });
+</script>
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block usertools %}{% endblock %}
+
+{% block pretitle %}
+<div id="custom-user-tools" style="text-align: left; margin-bottom: 20px; font-size: 0.95rem; color: var(--body-quiet-color); padding-bottom: 15px; border-bottom: 1px dashed var(--border-color); display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+    <span style="margin-right: 10px;">歡迎，<strong>{% firstof user.get_short_name user.get_username %}</strong></span>
+    
+    <div style="display: flex; gap: 8px; align-items: center;">
+        <a href="/" class="user-action-btn" style="background-color: var(--button-bg); color: var(--primary-fg); padding: 6px 14px; border-radius: 5px; text-decoration: none; font-size: 0.85rem; transition: background 0.2s;">檢視網站</a>
+        
+        {% if user.has_usable_password %}
+            <a href="{% url 'admin:password_change' %}" class="user-action-btn" style="background-color: var(--button-bg); color: var(--primary-fg); padding: 6px 14px; border-radius: 5px; text-decoration: none; font-size: 0.85rem; transition: background 0.2s;">變更密碼</a>
+        {% endif %}
+        
+        <a href="{% url 'admin:logout' %}" class="user-action-btn" style="background-color: var(--error-fg); color: #ffffff; padding: 6px 14px; border-radius: 5px; text-decoration: none; font-size: 0.85rem; transition: background 0.2s;">登出</a>
+    </div>
+</div>
 {% endblock %}
 
 {% block extrastyle %}
 <style>
-    :root {
+    div.breadcrumbs {
+        display: none !important;
+    }
+    :root, [data-theme="light"] {
         --primary: #666666;
         --secondary: #888888;
         --accent: #666666;
         --primary-fg: #ffffff;
         --body-fg: #444444;
         --body-bg: #f9f9f9;
+        --card-bg: #ffffff;
         --body-quiet-color: #777777;
         --body-loud-color: #444444;
+        --warning-bg: #fff3cd;
+        --warning-border: #ffe69c;
+        --warning-fg: #664d03;
         --header-color: #fff;
         --header-branding-color: #fff;
         --header-bg: #666666;
         --header-link-color: #fff;
-        --breadcrumbs-fg: #888888;
-        --breadcrumbs-link-fg: #444444;
-        --breadcrumbs-bg: #ffffff;
         --link-fg: #666666;
         --link-hover-color: #888888;
         --link-selected-fg: #ffffff;
@@ -37,6 +138,38 @@
         --default-button-hover-bg: #888888;
         --selected-bg: #f2f2f2;
         --selected-row: #fafafa;
+    }
+
+    [data-theme="dark"] {
+        --primary: #777777;
+        --secondary: #555555;
+        --accent: #777777;
+        --primary-fg: #ffffff;
+        --body-fg: #eeeeee;
+        --body-bg: #121212;
+        --card-bg: #1e1e1e;
+        --body-quiet-color: #aaaaaa;
+        --body-loud-color: #ffffff;
+        --warning-bg: #332701;
+        --warning-border: #664d03;
+        --warning-fg: #ffecb5;
+        --header-color: #ffffff;
+        --header-branding-color: #ffffff;
+        --header-bg: #222222;
+        --header-link-color: #ffffff;
+        --link-fg: #999999;
+        --link-hover-color: #cccccc;
+        --link-selected-fg: #ffffff;
+        --hairline-color: #333333;
+        --border-color: #333333;
+        --error-fg: #e74c3c;
+        --message-success-bg: #2ecc71;
+        --button-bg: #444444;
+        --button-hover-bg: #666666;
+        --default-button-bg: #444444;
+        --default-button-hover-bg: #666666;
+        --selected-bg: #2a2a2a;
+        --selected-row: #222222;
     }
 
     body {
@@ -56,7 +189,7 @@
     
     .module h2, .module caption, .inline-group h2 {
         background: var(--body-bg);
-        color: var(--primary);
+        color: var(--body-loud-color);
         border-bottom: 2px solid var(--primary);
         font-weight: 600;
     }
@@ -79,23 +212,122 @@
         display: inline-block;
     }
     
-    /* 強制將表格標題列、過濾器等全部轉換為灰色 */
-    table thead th, 
-    .change-list .filtered .results table thead th,
+    /* 表格視覺大升級：增加間距與滑鼠懸停特效 */
+    #changelist table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+    }
+    #changelist table tbody tr {
+        transition: background-color 0.2s;
+    }
+    #changelist table tbody tr:hover {
+        background-color: rgba(100, 100, 100, 0.05) !important;
+    }
+    [data-theme="dark"] #changelist table tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+    #changelist table tbody td, #changelist table thead th {
+        padding: 12px 15px !important;
+        vertical-align: middle;
+        text-align: left !important; /* 強制所有表格內容與標題靠左對齊 */
+        border-bottom: 1px solid var(--border-color);
+    }
     #changelist table thead th {
         background-color: var(--primary) !important;
         color: #ffffff !important;
-        border-color: var(--border-color) !important;
+        border-bottom: none !important;
     }
     table thead th a:link, table thead th a:visited {
         color: #ffffff !important;
+        font-weight: bold;
+        transition: opacity 0.2s;
+    }
+    table thead th a:hover {
+        color: #ffffff !important;
+        opacity: 0.8 !important; /* 滑鼠移過去稍微變透，代替變色 */
+    }
+    
+    /* 重置排序圖示：回歸 Django 預設，只透過 Filter 轉為純黑色並放大點擊區域 */
+    table thead th .sortoptions {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 5px;
+    }
+    table thead th .sortoptions a {
+        display: inline-block;
+        opacity: 0.8 !important;
+        filter: brightness(0) !important; /* 強制把 Django 灰色 SVG 轉成純黑 */
+        transition: transform 0.1s, opacity 0.1s;
+        transform: scale(1.6); /* 直接放大圖示與點擊範圍，不影響排版結構 */
+        margin: 0 2px; /* 縮小按鈕之間的間距，讓它們更緊湊 */
+    }
+    table thead th .sortoptions a:hover {
+        opacity: 1 !important;
+        transform: scale(2.0); /* 滑鼠游標移過去時再稍微放大，增加回饋感 */
+    }
+    table thead th .sortoptions .sortpriority {
+        color: #333333;
+        font-size: 0.9rem;
+        font-weight: bold;
+        vertical-align: middle;
+        margin: 0 2px;
+    }
+    
+    /* 隱藏標題列的個別取消排序按鈕（已移至動作列全局控制） */
+    table thead th .sortoptions a.sortremove {
+        display: none !important;
     }
     #changelist-filter h2 {
         background: var(--primary) !important;
     }
+    /* 強制列表排版：上到下的排列 (Filters 在上，Table 在下) */
+    #changelist {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
     #toolbar {
-        background: var(--body-bg) !important;
-        border-bottom: 1px solid var(--border-color) !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: flex;
+        align-items: center;
+    }
+    #toolbar form {
+        width: 100%;
+        display: flex;
+        align-items: center;
+    }
+    #toolbar input[type="text"] {
+        width: 100%;
+        max-width: 400px;
+        font-size: 1.1rem;
+        padding: 10px 15px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background: var(--body-bg);
+        color: var(--body-fg);
+        transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    #toolbar input[type="text"]:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(100,100,100,0.1);
+        outline: none;
+    }
+    #toolbar input[type="submit"] {
+        font-size: 1.0rem;
+        padding: 10px 25px;
+        margin-left: 10px;
+        background: var(--primary);
+        color: var(--primary-fg);
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
     }
     .paginator {
         border-top: 1px solid var(--border-color) !important;
@@ -104,11 +336,11 @@
         color: var(--body-fg) !important;
     }
     
-    /* 縮減右側篩選條件的寬度 */
+    /* 移除右側篩選器的寬度限制，因為已經移到上方了 */
     #changelist-filter {
-        flex: 0 0 200px !important;
-        width: 200px !important;
-        margin-left: 15px;
+        flex: none !important;
+        width: 100% !important;
+        margin-left: 0 !important;
     }
     
     /* 放大並突顯「新增」按鈕 */
@@ -116,15 +348,16 @@
         float: none !important;
         display: flex !important;
         justify-content: flex-end;
+        margin-top: 0 !important;
         margin-bottom: 20px !important;
-        margin-top: 10px !important;
+        gap: 10px;
     }
     .object-tools a.addlink {
         background-color: var(--primary) !important;
         color: #ffffff !important;
-        font-size: 1.1rem !important;
-        padding: 12px 30px !important;
-        border-radius: 8px !important;
+        font-size: 1.0rem !important;
+        padding: 10px 24px !important;
+        border-radius: 6px !important;
         font-weight: bold !important;
         box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease !important;
@@ -135,6 +368,59 @@
         background-color: var(--secondary) !important;
         transform: translateY(-2px);
         box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+    .object-tools a.historylink, .object-tools a.viewsitelink {
+        font-size: 0.95rem !important;
+        padding: 10px 20px !important;
+        border-radius: 6px !important;
+    }
+    
+    /* 將主要內容區塊變成白色卡片 */
+    #content {
+        background-color: var(--card-bg) !important;
+        margin: 25px 40px !important;
+        padding: 30px 40px !important;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+    #content > h1 {
+        text-align: left !important;
+        margin-top: 0 !important;
+        margin-bottom: 25px !important;
+        color: var(--body-loud-color) !important;
+        font-size: 1.6rem !important;
+        font-weight: bold !important;
+        border-bottom: 2px solid var(--hairline-color);
+        padding-bottom: 15px;
+    }
+    #content > h2 {
+        text-align: left !important;
+        margin-bottom: 20px !important;
+        color: var(--body-quiet-color) !important;
+    }
+    
+    /* 強制讓 Header 使用 Flexbox，並將使用者工具與深淺色切換按鈕推至最右側 */
+    #header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+    #branding {
+        flex-grow: 1 !important;
+        width: 100% !important;
+    }
+    
+    .user-action-btn:hover {
+        filter: brightness(1.15);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    /* 隱藏原本 Header 右側被清空的區塊與預設的切換按鈕，避免出現雙重按鈕 */
+    #user-tools, 
+    #header > .theme-toggle,
+    #header > button.theme-toggle {
+        display: none !important;
     }
 </style>
 {% endblock %}

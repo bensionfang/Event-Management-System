@@ -1,6 +1,8 @@
 {% extends "admin/base_site.html" %}
 {% load i18n static %}
 
+{% block breadcrumbs %}{% endblock %}
+
 {% block extrastyle %}
     {{ block.super }}
     <style>
@@ -11,7 +13,7 @@
             margin-top: 20px;
         }
         .dash-card {
-            background: #fff;
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 25px;
@@ -37,7 +39,7 @@
             font-size: 1.3rem;
             font-weight: 600;
             margin-bottom: 10px;
-            color: var(--primary);
+            color: var(--body-loud-color);
         }
         .dash-desc {
             font-size: 0.95rem;
@@ -80,9 +82,10 @@
     </style>
 {% endblock %}
 
+{% block content_title %}{% endblock %}
+
 {% block content %}
 <div id="custom-dashboard">
-    <h1 style="font-size: 1.8rem; margin-bottom: 30px;">歡迎使用系辦系統</h1>
     
     <div class="dashboard-container">
         
@@ -140,7 +143,7 @@
         
     </div>
     
-    <div style="margin-top: 50px; padding: 20px; background: #fff3cd; border: 1px solid #ffe69c; border-radius: 8px; color: #664d03;">
+    <div style="margin-top: 50px; padding: 20px; background: var(--warning-bg); border: 1px solid var(--warning-border); border-radius: 8px; color: var(--warning-fg);">
         <strong>💡 助理小提示：</strong><br>
         如果您不小心刪除了任何資料，請不用擔心。系統內建「資源回收桶」機制（防誤刪），您可以隨時聯絡技術人員幫您從後台撈回被隱藏的資料！
     </div>

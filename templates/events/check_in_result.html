@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}簽到結果 | {{ registration.event.title }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto; text-align: center; padding: 3rem 2rem;">
+    {% if status == 'success' %}
+        <div style="font-size: 4rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h2 style="font-size: 2rem; margin-bottom: 1rem; color: #28a745;">簽到成功</h2>
+    {% else %}
+        <div style="font-size: 4rem; color: #ffc107; margin-bottom: 1rem;">!</div>
+        <h2 style="font-size: 2rem; margin-bottom: 1rem; color: #ffc107;">重複簽到</h2>
+    {% endif %}
+    
+    <p style="font-size: 1.25rem; font-weight: bold; margin-bottom: 2rem;">{{ message }}</p>
+    
+    <div style="background-color: var(--bg-body); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; text-align: left; display: inline-block; border: 1px solid var(--border-color);">
+        <p style="margin: 0.5rem 0;"><strong>活動名稱：</strong> {{ registration.event.title }}</p>
+        <p style="margin: 0.5rem 0;"><strong>報名姓名：</strong> {{ registration.name }}</p>
+        <p style="margin: 0.5rem 0;"><strong>報名信箱：</strong> {{ registration.email }}</p>
+        <p style="margin: 0.5rem 0;"><strong>報名時間：</strong> {{ registration.registered_at|date:"Y/m/d H:i" }}</p>
+    </div>
+
+    <div>
+        <a href="{% url 'events:detail' registration.event.id %}" class="btn btn-outline" style="text-decoration: none; display: inline-block;">返回活動頁面</a>
+        <a href="{% url 'admin:events_registration_changelist' %}?event__id__exact={{ registration.event.id }}" class="btn" style="text-decoration: none; display: inline-block; margin-left: 1rem;">查看後台名單</a>
+    </div>
+</div>
+{% endblock %}

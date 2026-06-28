@@ -1,0 +1,46 @@
+{% load i18n static %}
+{% if cl.search_fields %}
+<div id="toolbar" style="margin: 0; padding: 0; width: 100%;">
+<form id="changelist-search" method="get" role="search" style="display: flex; align-items: center; width: 100%; gap: 10px;">
+    
+    {% if cl.opts.model_name == 'event' %}
+    <!-- 搜尋欄位選擇下拉選單 -->
+    <div class="custom-filter-section" style="display: flex; align-items: center; background: rgba(120,120,120,0.08); padding: 5px 12px; border-radius: 8px; flex-shrink: 0;">
+        <span style="font-size: 0.9rem; font-weight: bold; color: var(--body-fg); margin-right: 10px; white-space: nowrap;">
+            指定欄位
+        </span>
+        <select name="search_field" style="padding: 6px 10px; border: none; border-radius: 4px; background: var(--body-bg); color: var(--body-fg); box-shadow: 0 1px 3px rgba(0,0,0,0.05); cursor: pointer; outline: none; min-width: 120px; font-size: 0.85rem;">
+            <option value="all" {% if cl.params.search_field == 'all' or not cl.params.search_field %}selected{% endif %}>全文字欄位</option>
+            <option value="title" {% if cl.params.search_field == 'title' %}selected{% endif %}>活動名稱</option>
+            <option value="location" {% if cl.params.search_field == 'location' %}selected{% endif %}>地點</option>
+            <option value="organizer" {% if cl.params.search_field == 'organizer' %}selected{% endif %}>主辦單位</option>
+        </select>
+    </div>
+    {% endif %}
+
+    <!-- 搜尋輸入框 -->
+    <div style="display: flex; align-items: center; flex-grow: 1; background: var(--body-bg); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 0 10px;">
+        <img src="{% static 'admin/img/search.svg' %}" alt="Search" style="width: 18px; height: 18px; opacity: 0.5;">
+        <input type="text" size="40" name="{{ search_var }}" value="{{ cl.query }}" id="searchbar" placeholder="請輸入關鍵字..." style="border: none; padding: 10px; flex-grow: 1; background: transparent; color: var(--body-fg); font-size: 0.95rem; outline: none;">
+    </div>
+
+    <!-- 搜尋按鈕 -->
+    <input type="submit" value="{% translate 'Search' %}" style="padding: 8px 20px; border-radius: 6px; background: var(--primary); color: var(--primary-fg); border: none; font-size: 0.95rem; cursor: pointer;">
+    
+    {% if show_result_count %}
+        <span class="small quiet" style="margin-left: 10px; white-space: nowrap;">
+            {% blocktranslate count counter=cl.result_count %}{{ counter }} result{% plural %}{{ counter }} results{% endblocktranslate %} 
+            (<a href="?{% if cl.is_popup %}{{ is_popup_var }}=1{% if cl.add_facets %}&{% endif %}{% endif %}{% if cl.add_facets %}{{ is_facets_var }}{% endif %}" style="color: var(--primary);">
+                {% if cl.show_full_result_count %}{% blocktranslate with full_result_count=cl.full_result_count %}{{ full_result_count }} total{% endblocktranslate %}{% else %}{% translate "Show all" %}{% endif %}
+            </a>)
+        </span>
+    {% endif %}
+
+    {% for pair in cl.params.items %}
+        {% if pair.0 != search_var and pair.0 != 'search_field' %}
+            <input type="hidden" name="{{ pair.0 }}" value="{{ pair.1 }}">
+        {% endif %}
+    {% endfor %}
+</form>
+</div>
+{% endif %}

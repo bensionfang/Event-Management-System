@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}登出 | 系辦活動系統{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 2rem auto; text-align: center;">
+    {% if user.is_authenticated %}
+        <h2>確定要登出嗎？</h2>
+        <p style="color: var(--text-light); margin-bottom: 2rem;">您即將登出帳號：{{ user.username }}</p>
+        
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button type="submit" class="btn">確認登出</button>
+                <a href="/" class="btn btn-outline">取消並回首頁</a>
+            </div>
+        </form>
+    {% else %}
+        <h2>您已成功登出</h2>
+        <p style="color: var(--text-light); margin-bottom: 2rem;">感謝您的使用！</p>
+        <a href="/" class="btn btn-outline">回首頁</a>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,17 +1,13 @@
 {% load i18n %}
-<div class="custom-filter-section" style="margin-bottom: 20px;">
-    {% if title != '資源回收桶' %}
-    <h3 style="font-size: 0.95rem; font-weight: bold; margin-bottom: 10px; color: var(--body-fg);">
-        📍 依「{{ title }}」分類
-    </h3>
-    {% endif %}
-    <ul style="list-style: none; padding: 0; margin: 0;">
-    {% for choice in choices %}
-        <li{% if choice.selected %} class="selected" style="background-color: #f2f2f2; border-left: 3px solid var(--primary);"{% endif %} style="margin-bottom: 5px;">
-            <a href="{{ choice.query_string|iriencode }}" title="{{ choice.display }}" style="display: block; padding: 8px 12px; color: var(--body-fg); text-decoration: none; font-size: 0.9rem;">
+<div class="custom-filter-section" style="display: flex; align-items: center; background: rgba(120,120,120,0.08); padding: 5px 12px; border-radius: 8px;">
+    <span style="font-size: 0.9rem; font-weight: bold; color: var(--body-fg); margin-right: 10px; white-space: nowrap;">
+        {{ title }}
+    </span>
+    <select onchange="window.location.href=this.value" style="padding: 6px 10px; border: none; border-radius: 4px; background: var(--body-bg); color: var(--body-fg); box-shadow: 0 1px 3px rgba(0,0,0,0.05); cursor: pointer; outline: none; min-width: 120px; font-size: 0.85rem;">
+        {% for choice in choices %}
+            <option value="{{ choice.query_string|iriencode }}" {% if choice.selected %}selected{% endif %}>
                 {{ choice.display }}
-            </a>
-        </li>
-    {% endfor %}
-    </ul>
+            </option>
+        {% endfor %}
+    </select>
 </div>

@@ -92,8 +92,9 @@ class YearInputFilter(InputFilter):
 @admin.register(Record)
 class RecordAdmin(admin.ModelAdmin):
     form = RecordAdminForm
-    list_display = ('event', 'school_year', 'year', 'semester')
-    list_filter = (SchoolYearInputFilter, YearInputFilter, 'semester')
+    list_display = ('event', 'school_year', 'year', 'semester', 'is_public')
+    list_filter = (SchoolYearInputFilter, YearInputFilter, 'semester', 'is_public')
+    list_editable = ('is_public',)
     
     class Media:
         js = ('admin/js/record_auto_fill.js',)

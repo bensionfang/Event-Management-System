@@ -12,18 +12,20 @@
     {% for event in events %}
     <div class="card">
         <h3 style="margin-bottom: 0.5rem;">{{ event.title }}</h3>
-        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">
-            活動時間: {{ event.date|date:"Y/m/d H:i" }}
-        </p>
+        <div style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.5;">
+            <div><strong>時間:</strong> {{ event.date|date:"Y/m/d H:i" }}{% if event.end_time %} ~ {{ event.end_time|date:"Y/m/d H:i" }}{% endif %}</div>
+            {% if event.location %}<div><strong>地點:</strong> {{ event.location }}</div>{% endif %}
+        </div>
         <p style="margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
             {{ event.description }}
         </p>
         
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 0.85rem; color: {% if event.registered_count >= event.capacity %}#d9534f{% else %}#5cb85c{% endif %};">
-                報名人數: {{ event.registered_count }} / {{ event.capacity }}
-            </span>
-            <a href="{% url 'events:detail' event.id %}" class="btn {% if event.registered_count >= event.capacity %}btn-outline{% endif %}" style="padding: 0.5rem 1rem;">
+            <div style="font-size: 0.85rem; color: {% if event.registered_count >= event.capacity %}#d9534f{% else %}#5cb85c{% endif %}; line-height: 1.4;">
+                <div>報名人數上限: {{ event.capacity }}</div>
+                <div>已報名人數: {{ event.registered_count }}</div>
+            </div>
+            <a href="{% url 'events:detail' event.id %}" onclick="openEventModal(event, this.href);" class="btn {% if event.registered_count >= event.capacity %}btn-outline{% endif %}" style="padding: 0.5rem 1rem;">
                 查看詳情
             </a>
         </div>
@@ -33,4 +35,56 @@
 {% else %}
 <p style="text-align: center; color: var(--text-light); padding: 3rem 0;">目前沒有可報名的活動。</p>
 {% endif %}
+
+<!-- Modal HTML -->
+<div id="eventModalOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; backdrop-filter: blur(4px);"></div>
+<div id="eventModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; background: var(--bg-color); z-index: 1000; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+    <div style="position: sticky; top: 0; background: var(--bg-color); padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: flex-end; z-index: 10;">
+        <button onclick="closeEventModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-color); line-height: 1;">&times;</button>
+    </div>
+    <div id="eventModalContent" style="padding: 2rem;">
+        <div style="text-align: center; color: var(--text-light);">載入中...</div>
+    </div>
+</div>
+
+<script>
+    function openEventModal(e, url) {
+        e.preventDefault();
+        document.getElementById('eventModalOverlay').style.display = 'block';
+        document.getElementById('eventModal').style.display = 'block';
+        document.getElementById('eventModalContent').innerHTML = '<div style="text-align: center; color: var(--text-light); padding: 3rem 0;">載入中...</div>';
+        
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                const cardContent = doc.querySelector('main .card');
+                
+                if (cardContent) {
+                    cardContent.style.maxWidth = '100%';
+                    cardContent.style.margin = '0';
+                    cardContent.style.boxShadow = 'none';
+                    cardContent.style.border = 'none';
+                    cardContent.style.backgroundColor = 'transparent';
+                    document.getElementById('eventModalContent').innerHTML = cardContent.outerHTML;
+                } else {
+                    document.getElementById('eventModalContent').innerHTML = '<div style="text-align: center; color: var(--text-light);">無法載入內容</div>';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('eventModalContent').innerHTML = '<div style="text-align: center; color: #d9534f;">發生錯誤，請稍後再試</div>';
+            });
+    }
+
+    function closeEventModal() {
+        document.getElementById('eventModalOverlay').style.display = 'none';
+        document.getElementById('eventModal').style.display = 'none';
+    }
+    
+    document.getElementById('eventModalOverlay').addEventListener('click', closeEventModal);
+</script>
+
 {% endblock %}

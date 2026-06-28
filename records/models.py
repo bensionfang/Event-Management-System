@@ -19,6 +19,7 @@ class Record(models.Model):
     cover_image = models.ImageField(upload_to='records/images/', verbose_name="活動首圖/照片", blank=True, null=True)
     attachment = models.FileField(upload_to='records/attachments/', verbose_name="附件檔案", blank=True, null=True)
     
+    is_public = models.BooleanField(default=True, verbose_name="是否公開展示")
     is_deleted = models.BooleanField(default=False, verbose_name="是否已刪除")
 
     objects = models.Manager()

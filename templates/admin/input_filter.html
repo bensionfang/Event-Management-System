@@ -1,27 +1,25 @@
 {% load i18n %}
-<div class="custom-filter-section" style="margin-bottom: 20px;">
+<div class="custom-filter-section" style="display: flex; align-items: center; background: rgba(120,120,120,0.08); padding: 5px 12px; border-radius: 8px;">
     {% if title != '資源回收桶' %}
-    <h3 style="font-size: 0.95rem; font-weight: bold; margin-bottom: 10px; color: var(--body-fg);">
-        📍 依「{{ title }}」搜尋
-    </h3>
+    <span style="font-size: 0.9rem; font-weight: bold; color: var(--body-fg); margin-right: 10px; white-space: nowrap;">
+        {{ title }}
+    </span>
     {% endif %}
-    <div style="padding: 0 10px;">
-        <form method="GET" action="">
-            {# Keep other query string parameters #}
+    <div style="display: flex; align-items: center;">
+        <form method="GET" action="" style="display: flex; align-items: center; margin: 0; gap: 5px;">
             {% for k, v in choices.0.query_parts %}
                 <input type="hidden" name="{{ k }}" value="{{ v }}">
             {% endfor %}
             <input type="text"
                    name="{{ spec.parameter_name }}"
                    value="{{ spec.value|default_if_none:'' }}"
-                   placeholder="輸入{{ title }}..."
-                   style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; margin-bottom: 5px;">
-            <div style="display: flex; gap: 5px;">
-                <button type="submit" style="flex: 1; padding: 5px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">搜尋</button>
-                {% if spec.value %}
-                <a href="{{ choices.0.query_string }}" style="flex: 1; padding: 5px; background: #eaeaea; color: #333; text-decoration: none; text-align: center; border-radius: 4px; font-size: 0.85rem; display: inline-block;">清除</a>
-                {% endif %}
-            </div>
+                   placeholder="請輸入..."
+                   style="width: 120px; padding: 6px 10px; border: none; border-radius: 4px; box-sizing: border-box; background: var(--body-bg); color: var(--body-fg); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            
+            <button type="submit" style="padding: 5px 12px; background: var(--primary); color: var(--primary-fg); border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">篩選</button>
+            {% if spec.value %}
+            <a href="{{ choices.0.query_string }}" title="清除此條件" style="padding: 5px 8px; color: var(--error-fg); text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; justify-content: center;">清除</a>
+            {% endif %}
         </form>
     </div>
 </div>

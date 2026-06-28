@@ -2,11 +2,11 @@ from django.shortcuts import render, get_object_or_404
 from .models import Record
 
 def record_list(request):
-    # Fetch all active records and order by year/semester descending
-    records = Record.active_objects.select_related('event').order_by('-school_year', '-semester')
+    # Fetch all active and public records and order by year/semester descending
+    records = Record.active_objects.filter(is_public=True).select_related('event').order_by('-school_year', '-semester')
     
-    # Get all available distinct years for the filter dropdown
-    available_years = Record.active_objects.values_list('school_year', flat=True).distinct().order_by('-school_year')
+    # Get all available distinct years for the filter dropdown (only for public records)
+    available_years = Record.active_objects.filter(is_public=True).values_list('school_year', flat=True).distinct().order_by('-school_year')
     
     # Filter by selected year if provided
     selected_year = request.GET.get('year')

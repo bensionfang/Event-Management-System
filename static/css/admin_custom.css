@@ -1,0 +1,26 @@
+.datetimeshortcuts {
+    font-size: 0 !important;
+    color: transparent !important;
+}
+
+.datetimeshortcuts a:not([id^="calendarlink"]):not([id^="clocklink"]) {
+    display: none !important;
+}
+
+.datetimeshortcuts a[id^="calendarlink"],
+.datetimeshortcuts a[id^="clocklink"] {
+    display: inline-block !important;
+    font-size: 14px !important;
+    color: initial !important;
+    margin-left: 5px;
+}
+
+/* Add red asterisk to required fields */
+label.required:after,
+.required label:after,
+div.required > div > label:after,
+.form-row.errors label:after {
+    content: " *" !important;
+    color: #ba2121 !important;
+    font-weight: bold !important;
+}

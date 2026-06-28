@@ -1,0 +1,15 @@
+C:\Users\USER\Desktop\Event-Management-System\activity.md
+C:\Users\USER\Desktop\Event-Management-System\templates\admin\base_site.html
+C:\Users\USER\Desktop\Event-Management-System\templates\admin\change_form.html
+C:\Users\USER\Desktop\Event-Management-System\templates\admin\change_list.html
+C:\Users\USER\Desktop\Event-Management-System\templates\admin\filter.html
+C:\Users\USER\Desktop\Event-Management-System\templates\admin\index.html
+C:\Users\USER\Desktop\Event-Management-System\templates\admin\input_filter.html
+C:\Users\USER\Desktop\Event-Management-System\templates\admin\nav_sidebar.html
+C:\Users\USER\Desktop\Event-Management-System\templates\base.html
+C:\Users\USER\Desktop\Event-Management-System\templates\events\check_in_result.html
+C:\Users\USER\Desktop\Event-Management-System\templates\events\event_detail.html
+C:\Users\USER\Desktop\Event-Management-System\templates\events\event_list.html
+C:\Users\USER\Desktop\Event-Management-System\templates\events\registration_success.html
+C:\Users\USER\Desktop\Event-Management-System\templates\records\record_list.html
+C:\Users\USER\Desktop\Event-Management-System\templates\registration\login.html
