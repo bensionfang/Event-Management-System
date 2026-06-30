@@ -3,6 +3,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
 from django.db import transaction
+from django.core.mail import EmailMultiAlternatives
+from django.urls import reverse
+from django.utils.html import strip_tags
+import urllib.parse
 from .models import Event, Registration
 
 def event_list(request):
@@ -61,14 +65,81 @@ def register_event(request, event_id):
         event_locked.save()
         
         messages.success(request, "報名成功！")
-        # 未來可以重導向到成功頁面顯示 QR Code，目前先導回詳情頁
+        
+        # 發送報名成功信件與 QR Code
+        try:
+            check_in_url = request.build_absolute_uri(reverse('events:check_in_by_qr', args=[registration.check_in_id]))
+            qr_image_url = f"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={urllib.parse.quote(check_in_url)}"
+            
+            subject = f"報名成功通知：{event.title}"
+            
+            # 格式化活動時間，處理 timezone
+            from django.utils import timezone
+            local_date = timezone.localtime(event.date).strftime('%Y-%m-%d %H:%M')
+            
+            html_content = f"""
+            <h2>您已成功報名 {event.title}</h2>
+            <p>親愛的 <strong>{registration.name}</strong> 您好，</p>
+            <p>這是一封報名成功通知信。以下為您的報名資訊與活動詳情：</p>
+            
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <h3 style="margin-top: 0;">報名資訊</h3>
+                <ul style="list-style-type: none; padding-left: 0;">
+                    <li><strong>活動名稱：</strong>{event.title}</li>
+                    <li><strong>報名姓名：</strong>{registration.name}</li>
+                    <li><strong>聯絡信箱：</strong>{registration.email}</li>
+                    <li><strong>活動時間：</strong>{local_date}</li>
+                    <li><strong>活動地點：</strong>{event.location or '未定'}</li>
+                </ul>
+            </div>
+            
+            <p>請在活動當天出示下方 QR Code 進行簽到：</p>
+            <div style="margin: 20px 0;">
+                <img src="{qr_image_url}" alt="簽到 QR Code" width="200" height="200" />
+            </div>
+            <p>如果圖片無法顯示，請點擊下方連結取得您的簽到 QR Code：</p>
+            <p><a href="{check_in_url}">{check_in_url}</a></p>
+            <p>感謝您的參與！</p>
+            """
+            text_content = strip_tags(html_content)
+            
+            email_msg = EmailMultiAlternatives(
+                subject,
+                text_content,
+                None,
+                [registration.email]
+            )
+            email_msg.attach_alternative(html_content, "text/html")
+            email_msg.send(fail_silently=True)
+        except Exception as e:
+            # 若發送失敗不影響報名流程
+            pass
+
         return redirect('events:registration_success', registration_id=registration.id)
         
     return redirect('events:detail', event_id=event.id)
 
 def registration_success(request, registration_id):
     registration = get_object_or_404(Registration, id=registration_id)
-    return render(request, 'events/registration_success.html', {'registration': registration})
+    event = registration.event
+    
+    attendees = []
+    for reg in event.registrations.all():
+        name = reg.name
+        if len(name) >= 3:
+            anon_name = name[0] + 'O' + name[2:]
+        elif len(name) == 2:
+            anon_name = name[0] + 'O'
+        else:
+            anon_name = name + 'O'
+        attendees.append(anon_name)
+        
+    return render(request, 'events/event_detail.html', {
+        'event': event,
+        'attendees': attendees,
+        'is_full': event.registered_count >= event.capacity,
+        'registration_success_modal': registration
+    })
 
 @login_required
 @transaction.atomic

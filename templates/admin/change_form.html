@@ -3,6 +3,16 @@
 
 {% block breadcrumbs %}{% endblock %}
 
+{% block content_title %}{% endblock %}
+{% block content_subtitle %}{% endblock %}
+
+{% block field_sets %}
+    <div class="submit-row top-submit-row" style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 20px; background: transparent; padding: 0; border: none; box-shadow: none;">
+        {% if show_save %}<input type="submit" value="儲存" class="default" name="_save">{% endif %}
+    </div>
+    {{ block.super }}
+{% endblock %}
+
 {% block submit_buttons_bottom %}
     {{ block.super }}
     <script>
@@ -17,32 +27,27 @@
                 var saveBtns = submitRow.querySelectorAll('input[type="submit"]');
                 saveBtns.forEach(function(btn) {
                     btn.style.float = 'none';
-                    btn.style.margin = '0 10px 0 0';
+                    btn.style.margin = '0';
                     if (btn.classList.contains('default') || btn.name === '_save') {
-                        btn.style.order = '1';
-                        btn.style.padding = '12px 24px';
-                        btn.style.fontSize = '1.05rem';
-                        btn.style.height = 'auto';
-                    } else if (btn.name === '_continue') {
                         btn.style.order = '2';
-                    } else if (btn.name === '_addanother') {
-                        btn.style.order = '3';
-                    } else {
-                        btn.style.order = '4';
+                        btn.style.marginLeft = 'auto';
+                        btn.style.marginRight = '10px';
+                        btn.style.height = 'auto';
                     }
                 });
-                
+                submitRow.style.position = 'relative';
                 var deleteBtn = submitRow.querySelector('.deletelink-box') || submitRow.querySelector('.deletelink');
                 if (deleteBtn) {
-                    deleteBtn.style.order = '5';
-                    deleteBtn.style.float = 'none';
+                    deleteBtn.style.position = 'absolute';
+                    deleteBtn.style.left = '14px';
                     deleteBtn.style.margin = '0';
+                    deleteBtn.style.float = 'none';
                 }
                 
                 var cancelBtn = document.createElement('a');
-                cancelBtn.href = "{% url opts|admin_urlname:'changelist' %}";
-                cancelBtn.className = "button";
-                cancelBtn.style.cssText = "order: 6; background-color: #888; color: white; padding: 10px 15px; border-radius: 4px; text-decoration: none; margin-left: auto; line-height: 15px;";
+                cancelBtn.href = "{{ custom_cancel_url|default:'' }}" || "{% url opts|admin_urlname:'changelist' %}";
+                cancelBtn.className = "button cancel-link";
+                cancelBtn.style.cssText = "order: 3; background-color: #888; color: white; padding: 8px 20px; border-radius: 6px; text-decoration: none; margin-left: 0; font-size: 0.95rem;";
                 cancelBtn.textContent = "取消";
                 
                 submitRow.appendChild(cancelBtn);

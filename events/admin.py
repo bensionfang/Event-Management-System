@@ -114,7 +114,6 @@ class EventAdmin(admin.ModelAdmin):
     
     search_fields = ('title', 'location', 'organizer')
     search_form_template = 'admin/events_search_form.html'
-    inlines = [RegistrationInline]
     actions = ['soft_delete']
 
     def get_actions(self, request):
@@ -194,13 +193,70 @@ class DeletedEventAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
+class EventListFilter(SimpleListFilter):
+    title = '活動'
+    parameter_name = 'event'
+
+    def lookups(self, request, model_admin):
+        from .models import Event
+        events = Event.objects.filter(registrations__isnull=False).distinct()
+        return [(e.id, e.title) for e in events]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(event__id=self.value())
+        return queryset.none()
+
+    def choices(self, changelist):
+        yield {
+            'selected': self.value() is None,
+            'query_string': changelist.get_query_string(remove=[self.parameter_name]),
+            'display': '----',
+        }
+        for lookup, title in self.lookup_choices:
+            yield {
+                'selected': self.value() == str(lookup),
+                'query_string': changelist.get_query_string({self.parameter_name: lookup}),
+                'display': title,
+            }
+
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):
-    list_display = ('event', 'name', 'email', 'registered_at', 'attended', 'check_in_id')
-    list_filter = ('event', 'attended')
+    list_display = ('registration_number', 'name', 'email', 'registered_at', 'check_in_id', 'attended')
+    list_display_links = ('name',)
+    list_filter = (EventListFilter, 'attended')
     list_editable = ('attended',)
     search_fields = ('name', 'email', 'event__title')
+    ordering = ('id',)
     actions = ['export_as_csv', 'mark_as_attended', 'mark_as_absent']
+    
+    fields = ('event', 'registration_number', 'name', 'email', 'check_in_id', 'registered_at', 'attended')
+    readonly_fields = ('registration_number', 'check_in_id', 'registered_at')
+
+    def registration_number(self, obj):
+        return obj.id
+    registration_number.short_description = "編號"
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj: # editing an existing object
+            return self.readonly_fields + ('event',)
+        return self.readonly_fields
+
+    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+        from django.urls import reverse
+        opts = self.model._meta
+        changelist_url = reverse(f'admin:{opts.app_label}_{opts.model_name}_changelist')
+        
+        preserved = request.GET.get('_changelist_filters')
+        if preserved:
+            changelist_url += '?' + preserved
+
+        context.update({
+            'show_save_and_continue': False,
+            'show_save_and_add_another': False,
+            'custom_cancel_url': changelist_url,
+        })
+        return super().render_change_form(request, context, add, change, form_url, obj)
 
     def mark_as_attended(self, request, queryset):
         updated = queryset.update(attended=True)
@@ -236,3 +292,8 @@ class RegistrationAdmin(admin.ModelAdmin):
             
         return response
     export_as_csv.short_description = "📥 匯出選取的報名名單 (CSV 檔)"
+
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css?v=2',)
+        }

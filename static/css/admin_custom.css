@@ -24,3 +24,59 @@ div.required > div > label:after,
     color: #ba2121 !important;
     font-weight: bold !important;
 }
+
+/* Match save button size with the search button */
+input[type="submit"][name="_save"],
+.submit-row a.deletelink {
+    padding: 8px 20px !important;
+    border-radius: 6px !important;
+    font-size: 0.95rem !important;
+    cursor: pointer !important;
+    height: auto !important;
+    line-height: normal !important;
+    text-decoration: none !important;
+}
+
+/* Enlarge table header font size and vertically center all cells */
+#result_list thead th,
+#result_list thead th .text a {
+    font-size: 1.05rem !important;
+    padding: 12px 10px !important;
+}
+
+#result_list td,
+#result_list th {
+    vertical-align: middle !important;
+}
+
+/* Ensure actions bar takes full width to push save button to far right */
+.actions {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center;
+}
+
+/* Center the 'attended' checkbox column horizontally */
+#result_list th.column-attended,
+#result_list td.field-attended {
+    text-align: center !important;
+}
+#result_list th.column-attended .text {
+    display: flex;
+    justify-content: center;
+}
+
+/* Make boolean checkbox rows look like normal fields (Label on left with colon) */
+fieldset .form-row .checkbox-row {
+    display: flex;
+    align-items: center;
+}
+fieldset .form-row .checkbox-row label.vCheckboxLabel {
+    order: -1;
+    width: 160px;
+    padding: 4px 10px 0 0;
+    font-weight: bold;
+}
+fieldset .form-row .checkbox-row label.vCheckboxLabel::after {
+    content: "：";
+}

@@ -8,6 +8,12 @@ class RecordAdminForm(forms.ModelForm):
         model = Record
         exclude = ('is_deleted',)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'event' in self.fields:
+            from events.models import Event
+            self.fields['event'].queryset = Event.objects.filter(is_deleted=False)
+
     def clean_attachment(self):
         attachment = self.cleaned_data.get('attachment')
         if attachment:

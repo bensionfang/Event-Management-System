@@ -49,4 +49,53 @@
 
 
 </div>
+{% if registration_success_modal %}
+<!-- Modal Overlay -->
+<div id="successModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px);">
+    <div class="card" style="max-width: 500px; width: 90%; text-align: center; padding: 2.5rem 2rem; position: relative; animation: slideUp 0.3s ease-out;">
+        <!-- Close button (X) -->
+        <a href="{% url 'events:detail' event.id %}" style="position: absolute; top: 1rem; right: 1rem; text-decoration: none; font-size: 1.5rem; color: var(--text-light); line-height: 1; padding: 0.5rem;">&times;</a>
+        
+        <div style="font-size: 3.5rem; color: #28a745; margin-bottom: 1rem; line-height: 1;">✓</div>
+        <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem;">報名成功！</h2>
+        <p style="color: var(--text-light); font-size: 1rem; margin-bottom: 1.5rem;">您已成功報名 <strong>{{ event.title }}</strong></p>
+        
+        <div style="background-color: var(--bg-body); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1rem; display: inline-block; border: 1px solid var(--border-color);">
+            <h4 style="margin-top: 0; margin-bottom: 1rem; color: var(--text-color);">您的簽到專屬 QR Code</h4>
+            <div id="qrcode" style="display: flex; justify-content: center;"></div>
+            <p style="margin-top: 1rem; margin-bottom: 0; font-size: 0.9rem; color: var(--text-light);">已發送報到QRcode至報名信箱</p>
+            <p style="margin-top: 0.5rem; margin-bottom: 0; font-size: 0.8rem; color: var(--text-light);">報名信箱：{{ registration_success_modal.email }}</p>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var checkInUrl = window.location.origin + "{% url 'events:check_in_by_qr' registration_success_modal.check_in_id %}";
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: checkInUrl,
+            width: 160,
+            height: 160,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+        
+        // 點擊背景關閉 Modal
+        document.getElementById("successModal").addEventListener("click", function(e) {
+            if (e.target === this) {
+                window.location.href = "{% url 'events:detail' event.id %}";
+            }
+        });
+    });
+</script>
+{% endif %}
 {% endblock %}
